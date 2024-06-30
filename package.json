@@ -1,0 +1,28 @@
+{
+  "name": "mapmanager-backend",
+  "version": "1.0.0",
+  "description": "BackEnd of Map Manager",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index",
+    "start": "nodemon index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlejandroDojo/MapManager-Backend.git"
+  },
+  "author": "AnarquiaTeam",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlejandroDojo/MapManager-Backend/issues"
+  },
+  "homepage": "https://github.com/AlejandroDojo/MapManager-Backend#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.4.4",
+    "mongoose-unique-validator": "^5.0.1",
+    "socket.io": "^4.7.5"
+  }
+}
