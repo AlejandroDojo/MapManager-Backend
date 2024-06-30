@@ -21,8 +21,10 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "firebase-admin": "^12.2.0",
     "mongoose": "^8.4.4",
     "mongoose-unique-validator": "^5.0.1",
+    "multer": "^1.4.5-lts.1",
     "socket.io": "^4.7.5"
   }
 }
