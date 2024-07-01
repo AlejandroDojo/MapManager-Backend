@@ -7,7 +7,7 @@ const EventSchema = new mongoose.Schema(
       required: [true, "El nombre es un campo obligatorio"],
     },
     type: {
-      type: Number,
+      type: Array,
       required: [true, "Debes elegir que tipo de evento será"],
     },
     description: {
@@ -15,11 +15,11 @@ const EventSchema = new mongoose.Schema(
       required: [true, "La descripción es obligatoria"],
     },
     startDate: {
-      type: String,
+      type: Date,
       required: [true, "Tu evento debe tener fecha de inicio"],
     },
     endDate: {
-      type: String,
+      type: Date,
       required: [true, "Tu evento debe tener fecha de finalización"],
     },
     imagenUrl: { type: String, required: true },
@@ -28,7 +28,7 @@ const EventSchema = new mongoose.Schema(
       default: 0,
     },
     location: {
-      type: String,
+      type: Array,
       required: [true, "Debes elegir en el mapa donde será el evento"],
     },
   },

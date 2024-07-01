@@ -8,14 +8,14 @@ module.exports.index = (req, res) => {
 module.exports.subiendoEventos = (req, res) => {
   try {
     const { name, type,description,startDate,endDate,price,location } = req.body;
-    const eventImage = req.eventImage;
+    const eventImage = req.file;
 
     if (!eventImage) {
       return res.status(400).send('No se ha subido ninguna imagen');
     }
 
     
-    const blob = bucket.eventImage(eventImage.originalname);
+    const blob = bucket.file(eventImage.originalname);
     const blobStream = blob.createWriteStream({
       metadata: {
         contentType: eventImage.mimetype
@@ -28,6 +28,8 @@ module.exports.subiendoEventos = (req, res) => {
     });
 
     blobStream.on('finish', async () => {
+      
+      await blob.makePublic();
       
       const imagenUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
 
