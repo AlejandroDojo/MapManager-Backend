@@ -1,9 +1,18 @@
 const Event = require("../models/event.model");
 
 const { bucket } = require('../config/firebase.config');
+
+
+
 module.exports.index = (req, res) => {
   res.status(200).json({ message: "Api de EVENTS" });
 };
+
+module.exports.getAllEvents = (req,res)=>{
+  Event.find()
+    .then((eventos)=> res.status(200).json(eventos))
+    .catch((err)=> res.status(400).json({msg: "Ocurrio un error al consultar",err}))
+}
 
 module.exports.subiendoEventos = (req, res) => {
   try {
@@ -31,10 +40,10 @@ module.exports.subiendoEventos = (req, res) => {
       
       await blob.makePublic();
       
-      const imagenUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+      const imageUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
 
       
-      const newEvent = new Event({ name, type,description,startDate,endDate,price,location, imagenUrl });
+      const newEvent = new Event({ name, type,description,startDate,endDate,price,location, imageUrl });
       await newEvent.save();
 
       res.status(201).send('Datos y imagen subidos exitosamente');

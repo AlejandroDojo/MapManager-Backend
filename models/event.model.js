@@ -22,7 +22,7 @@ const EventSchema = new mongoose.Schema(
       type: Date,
       required: [true, "Tu evento debe tener fecha de finalización"],
     },
-    imagenUrl: { type: String, required: true },
+    imageUrl: { type: String, required: true },
     price: {
       type: Number,
       default: 0,
