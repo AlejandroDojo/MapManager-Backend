@@ -14,6 +14,18 @@ module.exports.getAllEvents = (req,res)=>{
     .catch((err)=> res.status(400).json({msg: "Ocurrio un error al consultar",err}))
 }
 
+module.exports.getEventsById = (req,res)=>{
+  const {id} = req.params;
+  Event.findById(id)
+    .then((evento)=> res.status(200).json(evento))
+    .catch(err => res.status(400).json({msg: "error al buscar por id", err}))
+  
+
+
+
+}
+
+
 module.exports.subiendoEventos = (req, res) => {
   try {
     const { name, type,description,startDate,endDate,price,location } = req.body;
