@@ -3,7 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const http = require('http');
 const EventRoutes = require('./routes/event.routes')
-
+const UserRoutes = require('./routes/user.routes')
 // Definicion de app y sockets.
 const app = express();
 app.use(cors());
@@ -28,6 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 
 //le pasamos la app a nuestra ruta
 EventRoutes(app);
+UserRoutes(app);
 
 // Conexiones de Soket.IO
 io.on('connection', (socket) => {

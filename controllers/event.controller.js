@@ -1,4 +1,5 @@
 const Event = require("../models/event.model");
+const User = require("../models/user.model");
 
 const { bucket } = require("../config/firebase.config");
 
@@ -192,4 +193,17 @@ module.exports.updateOneEvent = (req, res) => {
       console.error(error);
       res.status(500).send("Error en el servidor");
     });
+};
+module.exports.agregarUser = (req, res) => {
+  const ID = req.params.userID;
+
+  User.findOne({ _id: ID }).then((UserEncontrado) => {
+    Event.findOneAndUpdate(
+      { email: req.body.email },
+      { $push: { userAssist: UserEncontrado } },
+      { new: true }
+    ).then((EventUpdated) => {
+      return res.status(200).json(EventUpdated);
+    });
+  });
 };
