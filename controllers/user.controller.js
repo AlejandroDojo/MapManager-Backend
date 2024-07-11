@@ -2,6 +2,7 @@ require('dotenv').config();
 const bcrypt = require("bcrypt");
 const HASH_SALT = 10;
 const saltGenerado = bcrypt.genSaltSync(HASH_SALT);
+console.log(saltGenerado);
 const User = require("../models/user.model");
 const Event = require("../models/event.model");
 const jwt = require("jsonwebtoken");
@@ -19,12 +20,20 @@ module.exports.todosLosUsers = (req, res) => {
 };
 
 module.exports.agregarUser = (req, res) => {
+  let pass;
+  try {
+    pass = bcrypt.hashSync(req.body.password, saltGenerado);
+  } catch (e) {
+    console.log(e)
+  }
   const UserNuevo = {
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     email: req.body.email,
-    password: bcrypt.hashSync(req.body.password, saltGenerado),
+    password: pass
   };
+
+  console.log(UserNuevo)
 
   // Falta validar los campos a agregar
 
@@ -94,7 +103,6 @@ module.exports.agregarEvent = (req, res) => {
 
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
-
   User.findOne({ email }).then((UserEncontrado) => {
     if (!UserEncontrado) {
       return res.status(404).json({ mensaje: "User no encontrado." });
@@ -109,7 +117,7 @@ module.exports.login = (req, res) => {
       email: UserEncontrado.email,
     };
 
-    jwt.sign(infoEnToken, SECRETO, { expiresIn: "15m" }, (error, token) => {
+    jwt.sign(infoEnToken, SECRETO, { expiresIn: "3m" }, (error, token) => {
       if (error) {
         return res
           .status(400)
@@ -118,4 +126,17 @@ module.exports.login = (req, res) => {
       return res.status(200).json({ token });
     });
   });
+};
+
+module.exports.remember = (req, res) => {
+  const token_usuario = req.headers.token_usuario;
+  console.log(req.headers)
+  console.log(token_usuario);
+  jwt.verify(token_usuario, SECRETO, (error, decodificado) => {
+    if(error){
+      console.log(error);
+      return res.status(401).json({mensaje: "Token no valido. No autorizado."});
+    }
+    return res.status(200).json({message: "Restaurando sessión"});
+ })
 };
