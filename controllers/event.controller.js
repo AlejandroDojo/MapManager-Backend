@@ -63,7 +63,7 @@ module.exports.subiendoEventos = (req, res) => {
       });
       await newEvent.save();
 
-      res.status(201).send("Datos y imagen subidos exitosamente");
+      res.status(201).send("Datos y imagen subidos exitosamente" );
     });
 
     blobStream.end(eventImage.buffer);
