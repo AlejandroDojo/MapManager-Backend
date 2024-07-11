@@ -31,10 +31,14 @@ const EventSchema = new mongoose.Schema(
       type: Array,
       required: [true, "Debes elegir en el mapa donde será el evento"],
     },
+    userAssist: { 
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Users' 
+  }
   },
   { timestamps: true }
 );
 
 const Event = mongoose.model("Event", EventSchema);
 
-module.exports = Event;
+module.exports = Event

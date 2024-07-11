@@ -1,4 +1,5 @@
 const Event = require("../models/event.model");
+const User = require("../models/user.model");
 
 const { bucket } = require("../config/firebase.config");
 
