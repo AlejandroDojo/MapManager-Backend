@@ -194,6 +194,7 @@ module.exports.updateOneEvent = (req, res) => {
       res.status(500).send("Error en el servidor");
     });
 };
+
 module.exports.asistirEvento = (req, res) => {
   const ID = req.params.id;
 
@@ -206,4 +207,4 @@ module.exports.asistirEvento = (req, res) => {
     ).then((EventUpdated) => {
       return res.status(200).json(EventUpdated);
     });
-  });
+  })};
