@@ -10,4 +10,5 @@ module.exports = (app) => {
     app.post('/api/upload', upload.single('imagen'), EventControllers.subiendoEventos)
     app.delete('/api/delete/:id', EventControllers.deleteById)
     app.put('/api/update/:id',upload.single('imagen'), EventControllers.updateOneEvent)
+    app.put('/api/asssit/user/:id', EventControllers.asistirEvento)
 }
