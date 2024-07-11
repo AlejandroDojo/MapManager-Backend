@@ -117,7 +117,7 @@ module.exports.login = (req, res) => {
       email: UserEncontrado.email,
     };
 
-    jwt.sign(infoEnToken, SECRETO, { expiresIn: "3m" }, (error, token) => {
+    jwt.sign(infoEnToken, SECRETO, { expiresIn: "15m" }, (error, token) => {
       if (error) {
         return res
           .status(400)
