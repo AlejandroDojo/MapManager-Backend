@@ -19,6 +19,17 @@ module.exports.todosLosUsers = (req, res) => {
     });
 };
 
+module.exports.uniqueUser = (req, res) => {
+  const _id = req.params.id;
+  return User.find({_id: _id})
+    .then((User) => {
+      return res.status(200).json(User);
+    })
+    .catch((error) => {
+      return res.status(500).json({ mensaje: "Algo salió mal", error });
+    });
+};
+
 module.exports.agregarUser = (req, res) => {
   let pass;
   try {
