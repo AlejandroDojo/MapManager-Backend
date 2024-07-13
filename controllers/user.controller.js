@@ -21,8 +21,22 @@ module.exports.todosLosUsers = (req, res) => {
 
 module.exports.uniqueUser = (req, res) => {
   const _id = req.params.id;
-  return User.find({_id: _id})
+  return User.findOne({_id: _id})
     .then((User) => {
+      console.log(User)
+      return res.status(200).json(User);
+    })
+    .catch((error) => {
+      return res.status(500).json({ mensaje: "Algo salió mal", error });
+    });
+};
+
+module.exports.userPorEmail = (req, res) => {
+  const emailR = req.params.email;
+  console.log(emailR)
+  return User.findOne({email: emailR})
+    .then((User) => {
+      console.log(User)
       return res.status(200).json(User);
     })
     .catch((error) => {
@@ -100,13 +114,14 @@ module.exports.actualizarUser = (req, res) => {
 
 module.exports.agregarEvent = (req, res) => {
   const ID = req.params.eventID;
-
+  console.log(ID)
   Event.findOne({ _id: ID }).then((EventEncontrado) => {
     User.findOneAndUpdate(
       { email: req.body.email },
       { $push: { assignedEvents: EventEncontrado } },
       { new: true }
     ).then((UserActualizado) => {
+      console.log(UserActualizado)
       return res.status(200).json(UserActualizado);
     });
   });
