@@ -19,10 +19,10 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: [true, "Tu evento debe tener fecha de inicio"],
     },
-    assignedEvents: { 
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Event' 
-    }
+    assignedEvents: [{ 
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Event' 
+  }]
   },
   { timestamps: true }
 );
