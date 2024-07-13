@@ -208,3 +208,18 @@ module.exports.asistirEvento = (req, res) => {
       return res.status(200).json(EventUpdated);
     });
   })};
+
+  module.exports.agregarCreador = (req, res) => {
+    const ID = req.params.id;
+  
+    console.log(ID)
+    User.findOne({ _id: ID }).then((UserEncontrado) => {
+      Event.findOneAndUpdate(
+        { _id: req.body._id },
+        { $push: { creator: UserEncontrado } },
+        { new: true }
+      ).then((EventUpdated) => {
+        return res.status(200).json(EventUpdated);
+      });
+    })};
+  

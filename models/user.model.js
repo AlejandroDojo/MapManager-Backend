@@ -22,7 +22,12 @@ const UserSchema = new mongoose.Schema(
     assignedEvents: [{ 
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Event' 
-  }]
+    }],
+    createdEvents: [{ 
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Event' 
+    }],
+  
   },
   { timestamps: true }
 );

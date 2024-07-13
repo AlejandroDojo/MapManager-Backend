@@ -126,7 +126,20 @@ module.exports.agregarEvent = (req, res) => {
     });
   });
 };
-
+module.exports.agregarEventosCreados = (req, res) => {
+  const ID = req.params.eventID;
+  console.log(ID)
+  Event.findOne({ _id: ID }).then((EventEncontrado) => {
+    User.findOneAndUpdate(
+      { email: req.body.email },
+      { $push: { createdEvents: EventEncontrado } },
+      { new: true }
+    ).then((UserActualizado) => {
+      console.log(UserActualizado)
+      return res.status(200).json(UserActualizado);
+    });
+  });
+};
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
   User.findOne({ email }).then((UserEncontrado) => {
