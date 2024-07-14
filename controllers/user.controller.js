@@ -32,12 +32,16 @@ module.exports.uniqueUser = (req, res) => {
 };
 
 module.exports.userPorEmail = (req, res) => {
-  const emailR = req.params.email;
-  console.log(emailR)
-  return User.findOne({email: emailR})
+  const {token} = req.params;
+  const {email}= jwt.verify(token,SECRETO)
+  
+  
+
+
+  User.findOne({email})
     .then((User) => {
       console.log(User)
-      return res.status(200).json(User);
+      return res.status(200).json(User.createdEvents);
     })
     .catch((error) => {
       return res.status(500).json({ mensaje: "Algo salió mal", error });
@@ -126,13 +130,20 @@ module.exports.agregarEvent = (req, res) => {
     });
   });
 };
+
+
 module.exports.agregarEventosCreados = (req, res) => {
-  const ID = req.params.eventID;
-  console.log(ID)
-  Event.findOne({ _id: ID }).then((EventEncontrado) => {
+  const {id} = req.params;
+  const {token} = req.body;
+  const {email} = jwt.verify(token, SECRETO);
+  
+
+
+  console.log(id)
+  Event.findOne({ _id: id }).then((EventEncontrado) => {
     User.findOneAndUpdate(
-      { email: req.body.email },
-      { $push: { createdEvents: EventEncontrado } },
+      { email: email },
+      { $push: { createdEvents: EventEncontrado._id } },
       { new: true }
     ).then((UserActualizado) => {
       console.log(UserActualizado)
@@ -140,6 +151,8 @@ module.exports.agregarEventosCreados = (req, res) => {
     });
   });
 };
+
+
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
   User.findOne({ email }).then((UserEncontrado) => {
@@ -156,7 +169,7 @@ module.exports.login = (req, res) => {
       email: UserEncontrado.email,
     };
 
-    jwt.sign(infoEnToken, SECRETO, { expiresIn: "3m" }, (error, token) => {
+    jwt.sign(infoEnToken, SECRETO, { expiresIn: "30m" }, (error, token) => {
       if (error) {
         return res
           .status(400)

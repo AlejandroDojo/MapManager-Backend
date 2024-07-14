@@ -24,7 +24,7 @@ const UserSchema = new mongoose.Schema(
       ref: 'Event' 
     }],
     createdEvents: [{ 
-      type: mongoose.Schema.Types.ObjectId,
+      type: Array,
       ref: 'Event' 
     }],
   

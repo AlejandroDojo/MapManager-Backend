@@ -1,5 +1,10 @@
+require('dotenv').config();
+const { v4: uuidv4 } = require('uuid');
 const Event = require("../models/event.model");
 const User = require("../models/user.model");
+const jwt = require("jsonwebtoken");
+const mongoose = require('mongoose')
+const SECRETO = process.env.SECRET;
 
 const { bucket } = require("../config/firebase.config");
 
@@ -26,15 +31,16 @@ module.exports.getEventsById = (req, res) => {
 
 module.exports.subiendoEventos = (req, res) => {
   try {
-    const { name, type, description, startDate, endDate, price, location } =
-      req.body;
+    const { name, type, description, startDate, endDate, price, location } = req.body;
     const eventImage = req.file;
 
     if (!eventImage) {
       return res.status(400).send("No se ha subido ninguna imagen");
     }
 
-    const blob = bucket.file(eventImage.originalname);
+    
+    const uniqueFileName = `${uuidv4()}_${eventImage.originalname}`;
+    const blob = bucket.file(uniqueFileName);
     const blobStream = blob.createWriteStream({
       metadata: {
         contentType: eventImage.mimetype,
@@ -63,7 +69,7 @@ module.exports.subiendoEventos = (req, res) => {
       });
       await newEvent.save();
 
-      res.status(201).send("Datos y imagen subidos exitosamente" );
+      res.status(201).send(newEvent._id);
     });
 
     blobStream.end(eventImage.buffer);
@@ -75,6 +81,13 @@ module.exports.subiendoEventos = (req, res) => {
 
 module.exports.deleteById = (req, res) => {
   const { id } = req.params;
+  const authHeader = req.headers.authorization;
+  
+  const token = authHeader.split(' ')[1];
+  console.log(token)
+
+  const {email} = jwt.verify(token, SECRETO); 
+  
 
   Event.findById(id).then((event) => {
     if (!event) {
@@ -87,6 +100,23 @@ module.exports.deleteById = (req, res) => {
       file.delete();
 
     }
+  });
+  const eventIdObj = new mongoose.Types.ObjectId(id);
+
+  User.findOneAndUpdate(
+    { email: email },
+    { $pull: { createdEvents: eventIdObj } },
+    { new: true }
+  )
+  .then((userActualizado) => {
+    if (userActualizado) {
+      console.log('Evento eliminado correctamente:', userActualizado);
+    } else {
+      console.log('Usuario no encontrado');
+    }
+  })
+  .catch((error) => {
+    console.error('Error al eliminar el evento:', error);
   });
 
   Event.findByIdAndDelete(id)
