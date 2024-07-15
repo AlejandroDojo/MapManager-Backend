@@ -6,7 +6,7 @@ module.exports = (app) => {
     app.get('/api/check', UserController.remember);
     app.post('/api/user/create/:id', UserController.agregarEventosCreados);
     app.get('/api/user/:id', UserController.uniqueUser);
-    app.get('/api/user/unique/:token', UserController.userPorEmail);
+    app.get('/api/userEvents', UserController.userPorEmail);
     app.get('/api/user/eventosdeusuario/:token', UserController.eventosAasitir);
     app.post('/api/register/user', UserController.agregarUser);
     app.delete('/api/remover/user', validateToken, UserController.removerUser);

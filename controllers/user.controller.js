@@ -32,13 +32,16 @@ module.exports.uniqueUser = (req, res) => {
 };
 
 module.exports.userPorEmail = (req, res) => {
-  const {token} = req.params;
+  const authHeader = req.headers.authorization;
+  const token = authHeader.split(' ')[1];
+  console.log(token)
+
   const {email}= jwt.verify(token,SECRETO)
   
   
+  console.log(email)
 
-
-  User.findOne({email})
+  User.findOne({email: email})
     .then((User) => {
       console.log(User)
       return res.status(200).json(User.createdEvents);
@@ -157,7 +160,11 @@ module.exports.agregarEvent = (req, res) => {
 
 module.exports.agregarEventosCreados = (req, res) => {
   const {id} = req.params;
-  const {token} = req.body;
+  const authHeader = req.headers.authorization;
+  
+  
+  const token = authHeader.split(' ')[1];
+
   const {email} = jwt.verify(token, SECRETO);
   
 
