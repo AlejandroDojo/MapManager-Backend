@@ -84,7 +84,7 @@ module.exports.deleteById = (req, res) => {
   const authHeader = req.headers.authorization;
   
   const token = authHeader.split(' ')[1];
-  console.log(token)
+  
 
   const {email} = jwt.verify(token, SECRETO); 
   
