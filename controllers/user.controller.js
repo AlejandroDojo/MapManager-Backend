@@ -48,6 +48,26 @@ module.exports.userPorEmail = (req, res) => {
     });
 };
 
+module.exports.eventosAasitir = (req, res) => {
+  const {token} = req.params;
+  const {email}= jwt.verify(token,SECRETO)
+  
+  
+
+
+  User.findOne({email})
+    .then((User) => {
+      console.log(User)
+      return res.status(200).json(User.assignedEvents);
+    })
+    .catch((error) => {
+      return res.status(500).json({ mensaje: "Algo salió mal", error });
+    });
+};
+
+
+
+
 module.exports.agregarUser = (req, res) => {
   let pass;
   try {
@@ -69,12 +89,13 @@ module.exports.agregarUser = (req, res) => {
   return User.create(UserNuevo)
     .then((UserConId) => {
       const infoEnToken = {
+        _id: UserConId._id,
         firstName: UserConId.firstName,
         lastName: UserConId.lastName,
         email: UserConId.email,
       };
 
-      jwt.sign(infoEnToken, SECRETO, { expiresIn: "15m" }, (error, token) => {
+      jwt.sign(infoEnToken, SECRETO, (error, token) => {
         if (error) {
           return res
             .status(400)
@@ -117,15 +138,17 @@ module.exports.actualizarUser = (req, res) => {
 };
 
 module.exports.agregarEvent = (req, res) => {
+  const {token} = req.header;
+  const {email} = jwt.verify(token, SECRETO);
   const ID = req.params.eventID;
   console.log(ID)
   Event.findOne({ _id: ID }).then((EventEncontrado) => {
     User.findOneAndUpdate(
-      { email: req.body.email },
+      { email: email },
       { $push: { assignedEvents: EventEncontrado } },
       { new: true }
     ).then((UserActualizado) => {
-      console.log(UserActualizado)
+      console.log(UserActualizado);
       return res.status(200).json(UserActualizado);
     });
   });
@@ -164,12 +187,13 @@ module.exports.login = (req, res) => {
     }
 
     const infoEnToken = {
-      firstName: UserEncontrado.firstName,
-      lastName: UserEncontrado.lastName,
-      email: UserEncontrado.email,
-    };
+        _id: UserEncontrado._id,
+        firstName: UserEncontrado.firstName,
+        lastName: UserEncontrado.lastName,
+        email: UserEncontrado.email,
+      };
 
-    jwt.sign(infoEnToken, SECRETO, { expiresIn: "30m" }, (error, token) => {
+    jwt.sign(infoEnToken, SECRETO, (error, token) => {
       if (error) {
         return res
           .status(400)

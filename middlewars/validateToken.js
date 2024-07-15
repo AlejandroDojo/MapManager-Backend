@@ -8,6 +8,7 @@ const validateToken = ((req, res, next) => {
             return res.status(406).json({mensaje: "Token no valido. No autorizado."});
         }
         req.infoUsuario = {
+            _id: decodificado._id,
             firstName: decodificado.firstName,
             lastName: decodificado.lastName,
             email: decodificado.email
