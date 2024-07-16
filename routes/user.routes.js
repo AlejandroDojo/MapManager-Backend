@@ -11,7 +11,7 @@ module.exports = (app) => {
     app.post('/api/register/user', UserController.agregarUser);
     app.delete('/api/remover/user', validateToken, UserController.removerUser);
     app.put('/api/actualizar/user', validateToken, UserController.actualizarUser);
-    app.put('/api/user/agregarEvent/:eventID', validateToken, UserController.agregarEvent);
+    app.put('/api/user/agregarEvent/:eventID', UserController.agregarEvent);
     app.post('/api/user/login', UserController.login);
     
 }

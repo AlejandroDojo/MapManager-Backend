@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const validateToken = ((req, res, next) => {
+    console.log(req.headers)
     const token_usuario = req.headers.token_usuario;
     jwt.verify(token_usuario, process.env.SECRET, (error, decodificado) => {
         if(error){

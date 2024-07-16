@@ -141,10 +141,10 @@ module.exports.actualizarUser = (req, res) => {
 };
 
 module.exports.agregarEvent = (req, res) => {
-  const {token} = req.header;
-  const {email} = jwt.verify(token, SECRETO);
+  
+  const {token_usuario} = req.body;
+  const {email} = jwt.verify(token_usuario, SECRETO);
   const ID = req.params.eventID;
-  console.log(ID)
   Event.findOne({ _id: ID }).then((EventEncontrado) => {
     User.findOneAndUpdate(
       { email: email },
