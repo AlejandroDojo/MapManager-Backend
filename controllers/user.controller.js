@@ -1,4 +1,4 @@
-require('dotenv').config();
+require("dotenv").config();
 const bcrypt = require("bcrypt");
 const HASH_SALT = 10;
 const saltGenerado = bcrypt.genSaltSync(HASH_SALT);
@@ -6,6 +6,7 @@ console.log(saltGenerado);
 const User = require("../models/user.model");
 const Event = require("../models/event.model");
 const jwt = require("jsonwebtoken");
+const { trusted } = require("mongoose");
 const SECRETO = process.env.SECRET;
 console.log(SECRETO);
 module.exports.todosLosUsers = (req, res) => {
@@ -21,9 +22,9 @@ module.exports.todosLosUsers = (req, res) => {
 
 module.exports.uniqueUser = (req, res) => {
   const _id = req.params.id;
-  return User.findOne({_id: _id})
+  return User.findOne({ _id: _id })
     .then((User) => {
-      console.log(User)
+      console.log(User);
       return res.status(200).json(User);
     })
     .catch((error) => {
@@ -33,17 +34,16 @@ module.exports.uniqueUser = (req, res) => {
 
 module.exports.userPorEmail = (req, res) => {
   const authHeader = req.headers.authorization;
-  const token = authHeader.split(' ')[1];
-  console.log(token)
+  const token = authHeader.split(" ")[1];
+  console.log(token);
 
-  const {email}= jwt.verify(token,SECRETO)
-  
-  
-  console.log(email)
+  const { email } = jwt.verify(token, SECRETO);
 
-  User.findOne({email: email})
+  console.log(email);
+
+  User.findOne({ email: email })
     .then((User) => {
-      console.log(User)
+      console.log(User);
       return res.status(200).json(User.createdEvents);
     })
     .catch((error) => {
@@ -52,15 +52,12 @@ module.exports.userPorEmail = (req, res) => {
 };
 
 module.exports.eventosAasitir = (req, res) => {
-  const {token} = req.params;
-  const {email}= jwt.verify(token,SECRETO)
-  
-  
+  const { token } = req.params;
+  const { email } = jwt.verify(token, SECRETO);
 
-
-  User.findOne({email})
+  User.findOne({ email })
     .then((User) => {
-      console.log(User)
+      console.log(User);
       return res.status(200).json(User.assignedEvents);
     })
     .catch((error) => {
@@ -68,24 +65,21 @@ module.exports.eventosAasitir = (req, res) => {
     });
 };
 
-
-
-
 module.exports.agregarUser = (req, res) => {
   let pass;
   try {
     pass = bcrypt.hashSync(req.body.password, saltGenerado);
   } catch (e) {
-    console.log(e)
+    console.log(e);
   }
   const UserNuevo = {
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     email: req.body.email,
-    password: pass
+    password: pass,
   };
 
-  console.log(UserNuevo)
+  console.log(UserNuevo);
 
   // Falta validar los campos a agregar
 
@@ -141,14 +135,60 @@ module.exports.actualizarUser = (req, res) => {
 };
 
 module.exports.agregarEvent = (req, res) => {
-  
-  const {token_usuario} = req.body;
-  const {email} = jwt.verify(token_usuario, SECRETO);
+  const { token_usuario } = req.body;
+  const { email } = jwt.verify(token_usuario, SECRETO);
   const ID = req.params.eventID;
   Event.findOne({ _id: ID }).then((EventEncontrado) => {
+    User.findOne(
+      { email: email }
+    ).then((UserActualizado) => {
+      let Igual = false;
+      EventEncontrado.userAssist.map((userID) => {
+        if (toString(userID) === toString(UserActualizado._id)) {
+          Igual = true;
+        }
+      });
+      if (Igual) {
+        return res
+          .status(401)
+          .json({ message: "Este usuario ya asistirá a este evento." });
+      } else {
+        Event.findOneAndUpdate(
+          { _id: ID },
+          { $push: { userAssist: UserActualizado._id } },
+          { new: true }
+        )
+          .then((e) => {
+            User.findOneAndUpdate(
+              { email: email },
+              { $push: { assignedEvents: e } },
+              { new: true }
+            )
+            .then((user) => console.log(user))
+            .catch((error) => console.log(error));
+          })
+          .catch((e) => {
+            console.log("");
+          });
+        return res.status(200).json(UserActualizado);
+      }
+    });
+  });
+};
+
+module.exports.agregarEventosCreados = (req, res) => {
+  const { id } = req.params;
+  const authHeader = req.headers.authorization;
+
+  const token = authHeader.split(" ")[1];
+
+  const { email } = jwt.verify(token, SECRETO);
+
+  console.log(id);
+  Event.findOne({ _id: id }).then((EventEncontrado) => {
     User.findOneAndUpdate(
       { email: email },
-      { $push: { assignedEvents: EventEncontrado } },
+      { $push: { createdEvents: EventEncontrado._id } },
       { new: true }
     ).then((UserActualizado) => {
       console.log(UserActualizado);
@@ -156,32 +196,6 @@ module.exports.agregarEvent = (req, res) => {
     });
   });
 };
-
-
-module.exports.agregarEventosCreados = (req, res) => {
-  const {id} = req.params;
-  const authHeader = req.headers.authorization;
-  
-  
-  const token = authHeader.split(' ')[1];
-
-  const {email} = jwt.verify(token, SECRETO);
-  
-
-
-  console.log(id)
-  Event.findOne({ _id: id }).then((EventEncontrado) => {
-    User.findOneAndUpdate(
-      { email: email },
-      { $push: { createdEvents: EventEncontrado._id } },
-      { new: true }
-    ).then((UserActualizado) => {
-      console.log(UserActualizado)
-      return res.status(200).json(UserActualizado);
-    });
-  });
-};
-
 
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
@@ -194,11 +208,11 @@ module.exports.login = (req, res) => {
     }
 
     const infoEnToken = {
-        _id: UserEncontrado._id,
-        firstName: UserEncontrado.firstName,
-        lastName: UserEncontrado.lastName,
-        email: UserEncontrado.email,
-      };
+      _id: UserEncontrado._id,
+      firstName: UserEncontrado.firstName,
+      lastName: UserEncontrado.lastName,
+      email: UserEncontrado.email,
+    };
 
     jwt.sign(infoEnToken, SECRETO, (error, token) => {
       if (error) {
@@ -213,13 +227,15 @@ module.exports.login = (req, res) => {
 
 module.exports.remember = (req, res) => {
   const token_usuario = req.headers.token_usuario;
-  console.log(req.headers)
+  console.log(req.headers);
   console.log(token_usuario);
   jwt.verify(token_usuario, SECRETO, (error, decodificado) => {
-    if(error){
+    if (error) {
       console.log(error);
-      return res.status(401).json({mensaje: "Token no valido. No autorizado."});
+      return res
+        .status(401)
+        .json({ mensaje: "Token no valido. No autorizado." });
     }
-    return res.status(200).json({message: "Restaurando sessión"});
- })
+    return res.status(200).json({ message: "Restaurando sessión" });
+  });
 };
